@@ -39,8 +39,9 @@ def build_orders():
                 "url": "http://www.colcacchio.co.za/menu",
                 "e164": "+27 21 551 1658",
                 "content-type": "application/json",
-                "schema_version": date.today().isoformat()}],
+                "schema_version": date.today().isoformat(),
                 "api": "https://github.com/kaapstorm/pizza/blob/master/get_orders.py"
+            }],
             ['data', OrderedDict()]
         ])]
     ])
