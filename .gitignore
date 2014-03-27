@@ -2,6 +2,7 @@
 
 # virtualenv
 venv
+venv3
 
 # Installer logs
 pip-log.txt

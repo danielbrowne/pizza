@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # coding=utf-8
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 from collections import OrderedDict
 from datetime import date
 import json
 import re
-from urllib2 import urlopen
+try:
+    from urllib.request import urlopen  # Python 3
+except ImportError:
+    from urllib2 import urlopen  # Python 2
 from bs4 import BeautifulSoup
 
 
@@ -18,7 +21,7 @@ URL_PIZZA = 'http://www.colcacchio.co.za/menu/pizza'
 def add_choosers(menu_items):
     if isinstance(menu_items, dict):
         dict_ = {}
-        for k, v in menu_items.iteritems():
+        for k, v in menu_items.items():
             dict_[k] = add_choosers(v)
         return dict_
 
@@ -40,7 +43,8 @@ def build_orders():
                 "e164": "+27 21 551 1658",
                 "content-type": "application/json",
                 "schema_version": date.today().isoformat(),
-                "api": "https://github.com/kaapstorm/pizza/blob/master/get_orders.py"
+                "api": ("https://github.com/kaapstorm/pizza/blob/master/"
+                        "get_orders.py")
             }],
             ['data', OrderedDict()]
         ])]
@@ -60,7 +64,8 @@ def get_filled_pastas():
     for item in soup.select('li.menu-item'):
         name = item.select('div > p > span.name')[0].string.lower()
         if name == 'gnocchi':
-            pastas['gnocchi'].append(item.select('div > p.terms-conditions')[0].string.lower())
+            pastas['gnocchi'].append(
+                item.select('div > p.terms-conditions')[0].string.lower())
         else:
             pastas['capelletti'].append(name)
     return pastas
@@ -102,6 +107,9 @@ def get_soup(url):
 
 
 if __name__ == '__main__':
-    text = json.dumps(build_orders(), indent=2).replace('\\u2019', "'")  # Colcacchio can't decide on their apostrophes
-    choosers = re.compile('\{\n *"choosers": \[]\n *}', re.MULTILINE)  # Put "choosers" on one line
-    print choosers.sub('{"choosers": []}', text)
+    menu = json.dumps(build_orders(), indent=2)
+    # Colcacchio can't decide on their apostrophes. Use "'"
+    menu = menu.replace('\\u2019', "'")  
+    # Put "choosers" on one line
+    choosers_re = re.compile('\{\n *"choosers": \[]\n *}', re.MULTILINE)  
+    print(choosers_re.sub('{"choosers": []}', menu))
