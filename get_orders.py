@@ -23,8 +23,17 @@ def parse_data(data):
                 # item_type is pizza name
                 count = len(item_name['choosers'])
                 if count:
+
+                    choosers = []
+                    for chooser in item_name['choosers']:
+                        extras = item_name.get('extras', dict()).get(chooser)      
+                        if extras:                  
+                            choosers.append('{}-{}'.format(chooser, tuple(extras)))
+                        else:
+                            choosers.append(chooser)
+
                     order = ' > '.join([category, item_type])
-                    orders[order] = (count, item_name['choosers'])
+                    orders[order] = (count, choosers)
                     total += count
             else:
                 # item_type is pasta type, item_name is pasta name
